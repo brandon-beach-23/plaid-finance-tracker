@@ -20,12 +20,14 @@
 ```bash
 cd backend/plaid-finance-tracker-backend
 mvn spring-boot:run
+```
 
 ### Frontend
-'''bash
+```bash
 cd frontend/plaid-finance-tracker-frontend
 npm install
 ng serve
+```
 
 ## Database
 - MySQL Workbench setup required
