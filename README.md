@@ -1,6 +1,6 @@
-![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/plaid-finance-tracker/ci.yml?branch=main)
-![License](https://img.shields.io/github/license/your-username/plaid-finance-tracker)
-![Issues](https://img.shields.io/github/issues/your-username/plaid-finance-tracker)
+![Build Status](https://img.shields.io/github/actions/workflow/status/brandon-beach-23/plaid-finance-tracker/ci.yml?branch=main)
+![License](https://img.shields.io/github/license/brandon-beach-23/plaid-finance-tracker)
+![Issues](https://img.shields.io/github/issues/brandon-beach-23/plaid-finance-tracker)
 ![Phase 1](https://img.shields.io/badge/Phase%201-Complete-brightgreen)
 ![Phase 2](https://img.shields.io/badge/Phase%202-In%20Progress-yellow)
 
