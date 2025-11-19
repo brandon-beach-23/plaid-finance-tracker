@@ -1,4 +1,4 @@
-HELP.md
+backend/plaid-finance-tracker-backend/HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -34,3 +34,9 @@ build/
 
 # Ignore application properties with sensitive info
 /src/main/resources/application-local.properties
+
+# Ignore IntelliJ build output
+/out/
+
+# Ignore BFG cleanup tool
+bfg-*.jar
