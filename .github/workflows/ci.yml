@@ -25,13 +25,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # <--- ENTERPRISE TIP: Caches dependencies to speed up build
+          cache: 'maven'
 
       - name: Run Unit Tests
-        run: mvn test # <--- Always test before building!
+        run: mvn test
 
       - name: Build with Maven
-        # 'package' builds the JAR but skips running tests again (since we just did it)
         run: mvn package -DskipTests
 
       - name: Upload Backend Artifact
@@ -40,7 +39,6 @@ jobs:
           name: spring-boot-app
           path: backend/plaid-finance-tracker-backend/target/*.jar
           retention-days: 1
-          # This "saves" the JAR file so the Deploy Job can find it later.
 
   # =======================================
   # JOB 2: FRONTEND (Angular)
@@ -53,35 +51,33 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions:setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
+          # CRITICAL FIX: Tells the cache action where the lock file is located
+          cache-dependency-path: frontend/plaid-finance-tracker-frontend/package-lock.json
 
-
-      - name: Install dependencies
+      - name: Install dependencies (npm ci)
+        # We explicitly CD into the directory for this and subsequent steps
         run: |
           cd frontend/plaid-finance-tracker-frontend
           npm ci 
+
+      - name: Lint Code
+        run: |
+          cd frontend/plaid-finance-tracker-frontend
+          npm run lint || echo "Lint warnings found" # Runs the linter
 
       - name: Build Angular app
         run: |
           cd frontend/plaid-finance-tracker-frontend
           npm run build -- --configuration=production
 
-      - name: Install dependencies
-        run: npm ci # <--- 'ci' is faster and safer than 'install' for pipelines
-
-      - name: Lint Code
-        run: npm run lint || echo "Lint warnings found" # Optional: Check code quality
-
-      - name: Build Angular app
-        run: npm run build -- --configuration=production
-
       - name: Upload Frontend Artifact
         uses: actions/upload-artifact@v4
         with:
           name: angular-app
+          # Path to the build output directory
           path: frontend/plaid-finance-tracker-frontend/dist/
           retention-days: 1
-          # This "saves" the dist folder so we can push it to S3 later.
