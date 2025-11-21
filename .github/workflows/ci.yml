@@ -47,9 +47,6 @@ jobs:
   # =======================================
   frontend-build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend/plaid-finance-tracker-frontend
 
     steps:
       - name: Checkout code
@@ -59,7 +56,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm' # <--- Caches node_modules
+          cache: 'npm'
+
+
+      - name: Install dependencies
+        run: |
+          cd frontend/plaid-finance-tracker-frontend
+          npm ci 
+
+      - name: Build Angular app
+        run: |
+          cd frontend/plaid-finance-tracker-frontend
+          npm run build -- --configuration=production
 
       - name: Install dependencies
         run: npm ci # <--- 'ci' is faster and safer than 'install' for pipelines
