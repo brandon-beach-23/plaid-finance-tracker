@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Full Stack CI/CD Pipeline
 
 on:
   push:
@@ -7,11 +7,15 @@ on:
     branches: [ main ]
 
 jobs:
+  # =======================================
+  # JOB 1: BACKEND (Spring Boot)
+  # =======================================
   backend-build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend/plaid-finance-tracker-backend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,15 +25,32 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven' # <--- ENTERPRISE TIP: Caches dependencies to speed up build
+
+      - name: Run Unit Tests
+        run: mvn test # <--- Always test before building!
 
       - name: Build with Maven
-        run: mvn clean install
+        # 'package' builds the JAR but skips running tests again (since we just did it)
+        run: mvn package -DskipTests
 
+      - name: Upload Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-boot-app
+          path: backend/plaid-finance-tracker-backend/target/*.jar
+          retention-days: 1
+          # This "saves" the JAR file so the Deploy Job can find it later.
+
+  # =======================================
+  # JOB 2: FRONTEND (Angular)
+  # =======================================
   frontend-build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend/plaid-finance-tracker-frontend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -38,9 +59,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm' # <--- Caches node_modules
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # <--- 'ci' is faster and safer than 'install' for pipelines
+
+      - name: Lint Code
+        run: npm run lint || echo "Lint warnings found" # Optional: Check code quality
 
       - name: Build Angular app
-        run: npm run build
+        run: npm run build -- --configuration=production
+
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-app
+          path: frontend/plaid-finance-tracker-frontend/dist/
+          retention-days: 1
+          # This "saves" the dist folder so we can push it to S3 later.
