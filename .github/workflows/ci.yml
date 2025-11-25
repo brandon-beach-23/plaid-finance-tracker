@@ -103,7 +103,7 @@ jobs:
         uses: jakejarvis/s3-sync-action@master
         with:
           # **REQUIRED FOR PUBLIC WEBSITES** Sets permissions for the files
-          args: --acl public-read --delete
+          args: --delete
 
         # Keys are always passed securely via the 'env' block
         env:
