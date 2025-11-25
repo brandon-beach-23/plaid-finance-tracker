@@ -105,14 +105,10 @@ jobs:
           # **REQUIRED FOR PUBLIC WEBSITES** Sets permissions for the files
           args: --acl public-read --delete
 
-          # Target S3 Bucket (from GitHub Secret)
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-
-          # Source directory to sync (must match Angular build output path)
-          SOURCE_DIR: dist/plaid-finance-tracker-frontend
-
         # Keys are always passed securely via the 'env' block
         env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # AWS_S3_BUCKET is no longer needed here as it is in the 'with' block
+          SOURCE_DIR: dist/plaid-finance-tracker-frontend
+
