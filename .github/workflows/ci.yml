@@ -81,3 +81,38 @@ jobs:
           # Path to the build output directory
           path: frontend/plaid-finance-tracker-frontend/dist/
           retention-days: 1
+
+    # =======================================
+    # JOB 3: DEPLOY FRONTEND (S3)
+    # =======================================
+  deploy-frontend:
+      # Ensure the build job finished successfully
+    needs: frontend-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-app
+          # The path where the build output is downloaded
+          path: dist/
+
+      - name: Deploy Angular App to AWS S3 & Clear Deletes
+        # Uses a robust community action for S3 synchronization
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          # **REQUIRED FOR PUBLIC WEBSITES** Sets permissions for the files
+          args: --acl public-read --delete
+
+          # Target S3 Bucket (from GitHub Secret)
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+          # Source directory to sync (must match Angular build output path)
+          SOURCE_DIR: dist/plaid-finance-tracker-frontend/browser
+
+        # Keys are always passed securely via the 'env' block
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS_S3_BUCKET is no longer needed here as it is in the 'with' block
