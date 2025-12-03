@@ -3,7 +3,7 @@
 ![Issues](https://img.shields.io/github/issues/brandon-beach-23/plaid-finance-tracker)
 ![Phase 1: Setup & Security](https://img.shields.io/badge/Phase%201-Complete-brightgreen)
 ![Phase 2: CI%2FCD](https://img.shields.io/badge/Phase%202-Complete-brightgreen)
-![Phase 3: Authentication Module](https://img.shields.io/badge/Phase%202-In%20Progress-yellow)
+![Phase 3: Authentication Module](https://img.shields.io/badge/Phase%203-In%20Progress-yellow)
 
 ---
 
