@@ -6,9 +6,15 @@ on:
   pull_request:
     branches: [ main ]
 
+# Global Environment Variables for AWS Elastic Beanstalk
+env:
+  AWS_REGION: us-east-2
+  EB_APPLICATION_NAME: plaid-finance-tracker
+  EB_ENVIRONMENT_NAME: PlaidFinanceTracker-env
+
 jobs:
   # =======================================
-  # JOB 1: BACKEND (Spring Boot)
+  # JOB 1: BACKEND BUILD (Spring Boot)
   # =======================================
   backend-build:
     runs-on: ubuntu-latest
@@ -31,17 +37,50 @@ jobs:
         run: mvn test
 
       - name: Build with Maven
+        # skips tests here since we ran them in the previous step
         run: mvn package -DskipTests
+
+      - name: Rename Artifact
+        # Renaming the specific versioned jar to a generic name makes deployment easier
+        run: |
+          mv target/*.jar target/backend-app.jar
 
       - name: Upload Backend Artifact
         uses: actions/upload-artifact@v4
         with:
           name: spring-boot-app
-          path: backend/plaid-finance-tracker-backend/target/*.jar
+          # We upload the specific renamed file
+          path: backend/plaid-finance-tracker-backend/target/backend-app.jar
           retention-days: 1
 
   # =======================================
-  # JOB 2: FRONTEND (Angular)
+  # JOB 2: BACKEND DEPLOY (Elastic Beanstalk)
+  # =======================================
+  deploy-backend:
+    needs: backend-build
+    runs-on: ubuntu-latest
+    # Only deploy if we are pushing to main (protects production from PRs)
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: spring-boot-app
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID_BACKEND }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
+          application_name: ${{ env.EB_APPLICATION_NAME }}
+          environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
+          version_label: "ver-${{ github.sha }}"
+          region: ${{ env.AWS_REGION }}
+          deployment_package: backend-app.jar
+
+  # =======================================
+  # JOB 3: FRONTEND BUILD (Angular)
   # =======================================
   frontend-build:
     runs-on: ubuntu-latest
@@ -55,11 +94,9 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          # CRITICAL FIX: Tells the cache action where the lock file is located
           cache-dependency-path: frontend/plaid-finance-tracker-frontend/package-lock.json
 
       - name: Install dependencies (npm ci)
-        # We explicitly CD into the directory for this and subsequent steps
         run: |
           cd frontend/plaid-finance-tracker-frontend
           npm ci 
@@ -67,7 +104,7 @@ jobs:
       - name: Lint Code
         run: |
           cd frontend/plaid-finance-tracker-frontend
-          npm run lint || echo "Lint warnings found" # Runs the linter
+          npm run lint || echo "Lint warnings found"
 
       - name: Build Angular app
         run: |
@@ -78,34 +115,29 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: angular-app
-          # Path to the build output directory
           path: frontend/plaid-finance-tracker-frontend/dist/
           retention-days: 1
 
-    # =======================================
-    # JOB 3: DEPLOY FRONTEND (S3)
-    # =======================================
+  # =======================================
+  # JOB 4: DEPLOY FRONTEND (S3)
+  # =======================================
   deploy-frontend:
-      # Ensure the build job finished successfully
     needs: frontend-build
     runs-on: ubuntu-latest
+    # Only deploy if we are pushing to main
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Download Frontend Artifact
         uses: actions/download-artifact@v4
         with:
           name: angular-app
-          # The path where the build output is downloaded
           path: dist/
 
       - name: Deploy Angular App to AWS S3 & Clear Deletes
-        # Uses a robust community action for S3 synchronization
         uses: jakejarvis/s3-sync-action@master
         with:
-          # **REQUIRED FOR PUBLIC WEBSITES** Sets permissions for the files
           args: --delete
-
-        # Keys are always passed securely via the 'env' block
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
