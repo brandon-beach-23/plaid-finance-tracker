@@ -10,7 +10,7 @@ on:
 env:
   AWS_REGION: us-east-2
   EB_APPLICATION_NAME: plaid-finance-tracker
-  EB_ENVIRONMENT_NAME: PlaidFinanceTracker-env
+  EB_ENVIRONMENT_NAME: Plaid-finance-tracker-env
 
 jobs:
   # =======================================
