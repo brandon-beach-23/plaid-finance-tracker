@@ -1,0 +1,9 @@
+label {
+    margin: 0.25rem 0;
+    font-weight: bold;
+}
+
+.req-asterisk {
+    color: red;
+    font-weight: bold;
+}

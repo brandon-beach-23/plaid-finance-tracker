@@ -1,1 +1,118 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+
+    /* Color Pallet */
+    --color-bg-main: #F1EFEC;
+    --color-accent-light: #D4C9BE;
+    --color-accent-dark: #123458;
+    --color-text-main: #030303;
+
+    /* Typography */
+    --font-family-base: "Questrial", sans-serif;
+    --font-size-base: 16px;
+    --font-size-sm: 0.75rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+
+    /* Spacing */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background-color: var(--color-bg-main);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+body {
+    padding-top: 60px;
+}
+
+html, body {
+    overflow-x: hidden;
+}
+
+section {
+    margin: 3rem 0;
+}
+
+h2 {
+    margin: var(--mt-lg) 0;
+    padding: var(--spacing-md);
+    color: var(--color-accent-dark);
+}
+
+/* Layout Utilities */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.container-sm {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.card {
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Spacing Utilities */
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+/* Text Utilities */
+.text-center { text-align: center; }
+.text-bold { font-weight: bold; }
+.text-main { color: var(--color-text-main); }
+.text-accent-dark { color: var(--color-accent-dark); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-md { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+
+/* Background Utilities */
+.bg-main { background-color: var(--color-bg-main); }
+.bg-accent-light { background-color: var(--color-accent-light); }
+.bg-accent-dark { background-color: var(--color-accent-dark); }
+
+/* Border Utilities */
+.border-accent-dark { border-color: var(--color-accent-dark); }

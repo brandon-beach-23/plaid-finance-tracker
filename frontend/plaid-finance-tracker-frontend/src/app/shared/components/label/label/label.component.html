@@ -1,0 +1,10 @@
+<label 
+    [attr.for]="forId"
+    [ngClass]="className"
+>
+    <span>{{ labelText }}</span>
+
+    @if (required) {
+        <span aria-hidden="true" class="req-asterisk">*</span>
+    }    
+</label>
